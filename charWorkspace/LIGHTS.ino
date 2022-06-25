@@ -1,18 +1,19 @@
-void flashLED(String color) {
-    // Constants
-    unsigned const int onTime = 100; // milliseconds of LED on-time
-    unsigned const int offTime = 100;
-    unsigned const int buzzerVolume = 2;
+// Constants
+unsigned const int onTime = 100; // milliseconds of LED on-time
+unsigned const int offTime = 700;
+unsigned const int buzzerVolume = 10; // For best results keep this between 1 and 15
 
-    // Other variables
+// Other variables
+unsigned long previousMills = 0; // Last time the LED was updated
+int ledState = LOW; // @TODO: Figure out what this is
+
+void flashLED(String color) {
     unsigned long currentMills = millis();
-    unsigned long previousMills = 0; // Last time the LED was updated
-    int ledState = LOW; // @TODO: Figure out what this is
 
     if ((ledState == HIGH) && (currentMills - previousMills >= onTime)) {
         ledState = LOW;
         previousMills = currentMills;
-        analogWrite(buzz, LOW);
+        analogWrite(buzzer, 0);
 
         // Turn off the LEDs
         digitalWrite(Rled, HIGH);
@@ -21,7 +22,7 @@ void flashLED(String color) {
     } else if ((ledState == LOW) && (currentMills - previousMills >= offTime)) {
         ledState = HIGH;
         previousMills = currentMills;
-        // analogWrite(buzz, buzzerVolume); // Comment out to disable beeping
+        analogWrite(buzzer, buzzerVolume); // Comment out to disable beeping
 
         // Set the LEDs
         if ((color == "white") || (color == "red") || (color == "yellow") || (color == "magenta")) {

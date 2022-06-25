@@ -38,7 +38,7 @@ const int cont = 33; //detects continuity of pyro channel
 const int Rled = 28; //controls red LED
 const int Gled = 27; //controls green LED
 const int Bled = 26; //controls blue LED
-const int buzz = 30; //controls buzzer
+const int buzzer = 30;
 const int flashCS = 10; //controls chip select pin of the spi flash chip
 const int chipSelect = BUILTIN_SDCARD; //controls chip select pin of the micro sd card
 
@@ -53,8 +53,6 @@ int state = 0; //defines the state machine
 float batV; //voltage of the battery
 
 // LEDs
-int ledState = 0; // ledState used to set the LED
-unsigned long previousMillis = 0;        // will store last time LED was updated
 
 // Flight stuffs
 const int abortRange = 30; //defines how many degrees off target an abort is initiated
@@ -166,7 +164,7 @@ float yOutPR;
 void setup() { // Runs once then goes to loop()
     pinModes();
     digitalWrite(gpio1, LOW);
-    setLED("red");
+    setLED("white");
     Serial.begin(9600);
     setupSensor();
     startBaro();

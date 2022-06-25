@@ -46,7 +46,7 @@ void pinModes () {
     pinMode(Rled, OUTPUT);
     pinMode(Gled, OUTPUT);
     pinMode(Bled, OUTPUT);
-    pinMode(buzz, OUTPUT);
+    pinMode(buzzer, OUTPUT);
     pinMode(gpio1, OUTPUT);
     pinMode(gpio2, OUTPUT);
 
