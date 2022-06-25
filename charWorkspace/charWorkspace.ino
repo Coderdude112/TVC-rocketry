@@ -1,46 +1,81 @@
-// ------------- //
-/* Bring in libs */
-// ------------- //
+/*
+ * I'v been working top to bottom starting in the setup function and renaming and reviewing as I go.
+ * All variables that can't be in their functions need to be defined here
+ * Variable sorting goes as they appear (top to bottom)
+ * Need to find a style guide and figure out intellisense
+ */
+
+// ------------ //
+/* Include libs */
+// ------------ //
+
 #include <Servo.h> // Servos
 #include <Wire.h> // Communication over i2c (comms between processor and sensors)
 #include <SPI.h> // Communication over spi (talk to SD card)
-#include <SD.h> // Read / write to SD card
-#include <Adafruit_LSM9DS1.h> // Communication with the IMU
-#include <Adafruit_BMP280.h> // Communication with the BARO (barometer)
+#include <SD.h> // Read & write to SD card
+#include <Adafruit_LSM9DS1.h> // Communication with the IMU (Gryoscope, magnatometer, and Acceleration)
+#include <Adafruit_BMP280.h> // Communication with the BARO (Temperature and barometric pressure)
 #include <Adafruit_Sensor.h> // General talk to sensors
 #include <Quaternion.h> // Orientation tracking (does the math for us)
 
-// ----------------- //
-/* Initing variables */
-// ----------------- //
+// -------------- //
+/* Init variables */
+// -------------- //
 
-// Required for use with the IMU and BARO
-Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1();
-Adafruit_BMP280 bmp;
+// Basic pin definitions
+unsigned const int rLED = 28; // Red control on the LED
+unsigned const int gLED = 27; // Green control on the LED
+unsigned const int bLED = 26; // Blue control on the LED
+unsigned const int buzzer = 30;
+unsigned const int GPIO1 = 37;
+unsigned const int GPIO2 = 38;
+unsigned const int servoXPin = 21; // TVC control servo
+unsigned const int servoYPin = 20; // TVC control servo
 
-Servo servoX;
-Servo servoY;
+// Micro SD card logging
+// Docs: https://github.com/arduino-libraries/SD/blob/master/docs/api.md
+unsigned const int sdCardPin = BUILTIN_SDCARD;
+File logFile;
+unsigned const int loggingInterval = 100; // ms between logging // 100>10 hz 25>40 hz
+File myFile; // deprecated. @TODO: Remove completely
 
-// Logging stuff
-File myFile; // Unknown use
-int loggingInterval = 100; // ms between logging // 100>10 hz 25>40 hz
+// IMU (Gryoscope, magnatometer, and Acceleration)
+// Docs: https://github.com/arduino-libraries/Arduino_LSM9DS1/blob/master/docs/api.md
+//       https://github.com/adafruit/Adafruit_LSM9DS1/blob/master/Adafruit_LSM9DS1.cpp
+Adafruit_LSM9DS1 IMU; // Might need to set to "Adafruit_LSM9DS1();"
+
+// BARO (Temperature and barometric pressure)
+// Docs: https://github.com/adafruit/Adafruit_BMP280_Library
+Adafruit_BMP280 BARO;
+float baroAltiOffset; // Estimated alti found upon startup
+
+// ---
 
 // Pin definitions @TODO: Redo these comments to be consistent
 const int vbat = 34; //analog pin to read battery voltage
-const int gpio1 = 37; //general purpose input output pin
-const int gpio2 = 38; //general purpose input output pin
 const int pwm1 = 23; //pulse width modulation output
 const int pwm2 = 22; //pulse width modulation output
 const int tvc1 = 21; //controls x servo
 const int tvc2 = 20; //controls y servo
 const int pyro = 29; //controls pyro channel
 const int cont = 33; //detects continuity of pyro channel
-const int Rled = 28; //controls red LED
-const int Gled = 27; //controls green LED
-const int Bled = 26; //controls blue LED
-const int buzzer = 30;
+
 const int flashCS = 10; //controls chip select pin of the spi flash chip
-const int chipSelect = BUILTIN_SDCARD; //controls chip select pin of the micro sd card
+
+// Acceleration stuff
+unsigned const int numOfAccelReadings = 15; // The number of accel readings that will be used in finding the average accel
+unsigned int accelReadings[numOfAccelReadings]; // All of the raw accel readings taken into account when calculating the average accel
+int accelReadIndex = 0;              // the index of the current reading
+int accelTotal = 0;                  // the running total
+int accelAverage = 0;                // the average
+// Raw acceleration data in m/s^2
+float accelX;
+float accelY;
+float accelZ;
+// Raw acceleration data in deg/s or rad/s
+float gyroX;
+float gyroY;
+float gyroZ;
 
 // Unknown
 uint8_t logFileNumber;
@@ -52,7 +87,8 @@ int zeroed = false;
 int state = 0; //defines the state machine
 float batV; //voltage of the battery
 
-// LEDs
+Servo servoX;
+Servo servoY;
 
 // Flight stuffs
 const int abortRange = 30; //defines how many degrees off target an abort is initiated
@@ -65,8 +101,7 @@ float roll;
 
 // Stuff the BARO gives
 float baroAlt; //estimated altitude from the barometer
-float trueAlt; //estimated altitude from the barometer minus altitude found upon startup (baroalt - baroOffset)
-float baroOffset; //estimated altitude found upon startup
+float trueAlt; //estimated altitude from the barometer minus altitude found upon startup (baroalt - baroAltiOffset)
 float maxAlt; //the highest estimated altitude acheived during flight
 
 // Time stuff
@@ -78,21 +113,6 @@ unsigned long burnoutDelay = (6500 - 3450); // Time between burnout and parachut
 unsigned long lastTime;
 unsigned long pyroTime; // Time the parachute launches maybe...
 unsigned long lastLog; // Time of the last log
-
-// Acceleration stuff
-const int accelNumReadings = 15;
-int accelReadings[accelNumReadings];      // the readings from the analog input
-int accelReadIndex = 0;              // the index of the current reading
-int accelTotal = 0;                  // the running total
-int accelAverage = 0;                // the average
-// Raw acceleration data in m/s^2
-float accelX;
-float accelY;
-float accelZ;
-// Raw acceleration data in deg/s or rad/s
-float gyroX;
-float gyroY;
-float gyroZ;
 
 // Orientation stuff
 uint64_t lastGyroUpdate;
@@ -158,30 +178,73 @@ float errSumZ;
 float xOutPR; //PR= post roll
 float yOutPR;
 
-// --------- //
-/* Functions */
-// --------- //
-void setup() { // Runs once then goes to loop()
-    pinModes();
-    digitalWrite(gpio1, LOW);
+// -------------- //
+/* Core Functions */
+// -------------- //
+
+/** Runs once to setup the program then executes loop() forever */
+void setup() {
+    setupPinMappings();
     setLED("white");
+
+    // Setup serial logging
     Serial.begin(9600);
-    setupSensor();
-    startBaro();
+    Serial.println("Serial log started");
+
+    // Setup Micro SD card logging
+    if (SD.begin(sdCardPin) == 0) {
+        Serial.println("SD init failure");
+        state = 100;
+        return;
+    } else {
+        bool foundNextFlightNum = false;
+        unsigned int nextFlightNum = 1;
+
+        while(foundNextFlightNum == false) {
+            if (SD.exists(("flight-" + String(nextFlightNum) + ".csv").c_str())) {
+                nextFlightNum++;
+            } else {
+                foundNextFlightNum = true;
+            }
+        }
+
+        logFile = SD.open(("flight-" + String(nextFlightNum) + ".csv").c_str(), FILE_WRITE);
+        logFile.println("dTime,flightTime,trueAlt,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,yaw,pitch,roll,xOut,yOut,state,pyroState");
+        logFile.flush();
+    }
+
+    // Setup the IMU
+    if (IMU.begin() == 0) {
+        Serial.println("IMU init failure");
+        state = 100;
+        return;
+    } else {
+        IMU.setupAccel(IMU.LSM9DS1_ACCELRANGE_16G); // Can be: LSM9DS1_ACCELRANGE_2G, LSM9DS1_ACCELRANGE_4G, LSM9DS1_ACCELRANGE_8G, or LSM9DS1_ACCELRANGE_16G
+        IMU.setupMag(IMU.LSM9DS1_MAGGAIN_4GAUSS); // Can be: LSM9DS1_MAGGAIN_4GAUSS, LSM9DS1_MAGGAIN_8GAUSS, LSM9DS1_MAGGAIN_12GAUSS, or LSM9DS1_MAGGAIN_16GAUSS
+        IMU.setupGyro(IMU.LSM9DS1_GYROSCALE_245DPS); // Can be: LSM9DS1_GYROSCALE_245DPS, LSM9DS1_GYROSCALE_500DPS, or LSM9DS1_GYROSCALE_2000DPS
+    }
+
+    // Setup the BARO
+    if (BARO.begin() == 0) {
+        Serial.println("BARO init failure");
+        state = 100;
+        return;
+    } else {
+        BARO.setSampling(   Adafruit_BMP280::MODE_NORMAL, // Operating Mode
+                            Adafruit_BMP280::SAMPLING_X2, // Tempeture oversampling
+                            Adafruit_BMP280::SAMPLING_X16, // Pressure oversampling
+                            Adafruit_BMP280::FILTER_X16, // Filtering
+                            Adafruit_BMP280::STANDBY_MS_125); // Standby time
+
+        baroAltiOffset = BARO.readAltitude(1013.25);
+    }
+
+    // ---
+
+    digitalWrite(GPIO1, LOW); // What does this do?
 
     servoX.write(xMid);
     servoY.write(yMid);
-
-    if (!SD.begin(BUILTIN_SDCARD)) {
-        Serial.println("sd initialization failed!");
-        return;
-        state = 9;
-    }
-    myFile = SD.open("test.csv", FILE_WRITE);
-    loggingLabel();
-    myFile.flush();
-    myFile.close();
-    myFile = SD.open("test.csv", FILE_WRITE);
 }
 
 void loop() {

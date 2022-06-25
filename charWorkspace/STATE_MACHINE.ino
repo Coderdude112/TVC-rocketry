@@ -3,9 +3,9 @@ void startUp() {
         state = 1;
         flashLED("red");
 
-        lsm.read();  // ask it to read in the data
+        IMU.read();  // ask it to read in the data
         sensors_event_t a, m, g, temp; // Get a new sensor event
-        lsm.getEvent(&a, &m, &g, &temp);
+        IMU.getEvent(&a, &m, &g, &temp);
 
         if (calCount < 1000) {
 
@@ -77,10 +77,10 @@ void chuteDescent() {
     // Keep the pyro charge lines on for 1 sec
     if (flightTime - pyroTime >= 1000) {
         pyroState = false;
-        digitalWrite(gpio1, LOW);
+        digitalWrite(GPIO1, LOW);
     } else {
         pyroState = true;
-        digitalWrite(gpio1, HIGH);
+        digitalWrite(GPIO1, HIGH);
     }
 
     // Reset the TVC mount
@@ -98,7 +98,7 @@ void chuteDescent() {
 
 void landed() {
     pyroState = false;
-    digitalWrite(gpio1, LOW);
+    digitalWrite(GPIO1, LOW);
     flashLED("magenta");
     myFile.flush();
     myFile.close();
@@ -186,13 +186,13 @@ void launchDetect() {
     accelReadIndex = accelReadIndex + 1;
 
     // if we're at the end of the array...
-    if (accelReadIndex >= accelNumReadings) {
+    if (accelReadIndex >= numOfAccelReadings) {
         // ...wrap around to the beginning:
         accelReadIndex = 0;
     }
     // === END ===
 
-    accelAverage = accelTotal / accelNumReadings; // calculate the average
+    accelAverage = accelTotal / numOfAccelReadings; // calculate the average
 
     if (accelAverage >= launchAcceleration) { // Detect a launch
         state = 2;

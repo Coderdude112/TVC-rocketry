@@ -1,3 +1,28 @@
+void setLED(String color) {
+    // Red LED
+    if ((color == "white") || (color == "red") || (color == "yellow") || (color == "magenta")) {
+        digitalWrite(rLED, LOW);
+    } else {
+        digitalWrite(rLED, HIGH);
+    }
+
+    // Green LED
+    if ((color == "white") || (color == "yellow") || (color == "green") || (color == "cyan")) {
+        digitalWrite(gLED, LOW);
+    } else {
+        digitalWrite(gLED, HIGH);
+    }
+
+    // Blue LED
+    if ((color == "white") || (color == "cyan") || (color == "blue") || (color == "magenta")) {
+        digitalWrite(bLED, LOW);
+    } else {
+        digitalWrite(bLED, HIGH);
+    }
+}
+
+// ---
+
 // Constants
 unsigned const int onTime = 100; // milliseconds of LED on-time
 unsigned const int offTime = 700;
@@ -16,9 +41,9 @@ void flashLED(String color) {
         analogWrite(buzzer, 0);
 
         // Turn off the LEDs
-        digitalWrite(Rled, HIGH);
-        digitalWrite(Gled, HIGH);
-        digitalWrite(Bled, HIGH);
+        digitalWrite(rLED, HIGH);
+        digitalWrite(gLED, HIGH);
+        digitalWrite(bLED, HIGH);
     } else if ((ledState == LOW) && (currentMills - previousMills >= offTime)) {
         ledState = HIGH;
         previousMills = currentMills;
@@ -26,44 +51,21 @@ void flashLED(String color) {
 
         // Set the LEDs
         if ((color == "white") || (color == "red") || (color == "yellow") || (color == "magenta")) {
-            digitalWrite(Rled, LOW);
+            digitalWrite(rLED, LOW);
         } else {
-            digitalWrite(Rled, HIGH);
+            digitalWrite(rLED, HIGH);
         }
 
         if ((color == "white") || (color == "yellow") || (color == "green") || (color == "cyan")) {
-            digitalWrite(Gled, LOW);
+            digitalWrite(gLED, LOW);
         } else {
-            digitalWrite(Gled, HIGH);
+            digitalWrite(gLED, HIGH);
         }
 
         if ((color == "white") || (color == "cyan") || (color == "blue") || (color == "magenta")) {
-            digitalWrite(Bled, LOW);
+            digitalWrite(bLED, LOW);
         } else {
-            digitalWrite(Bled, HIGH);
+            digitalWrite(bLED, HIGH);
         }
-    }
-}
-
-void setLED(String color) {
-    // Red LED
-    if ((color == "white") || (color == "red") || (color == "yellow") || (color == "magenta")) {
-        digitalWrite(Rled, LOW);
-    } else {
-        digitalWrite(Rled, HIGH);
-    }
-
-    // Green LED
-    if ((color == "white") || (color == "yellow") || (color == "green") || (color == "cyan")) {
-        digitalWrite(Gled, LOW);
-    } else {
-        digitalWrite(Gled, HIGH);
-    }
-
-    // Blue LED
-    if ((color == "white") || (color == "cyan") || (color == "blue") || (color == "magenta")) {
-        digitalWrite(Bled, LOW);
-    } else {
-        digitalWrite(Bled, HIGH);
     }
 }

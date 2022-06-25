@@ -1,14 +1,14 @@
 void getTelemetry() {
-    baroAlt = bmp.readAltitude(1013.25);
-    trueAlt = baroAlt - baroOffset;
+    baroAlt = BARO.readAltitude(1013.25);
+    trueAlt = baroAlt - baroAltiOffset;
 
     if (trueAlt > maxAlt) {
         maxAlt = trueAlt;
     }
 
-    lsm.read(); // ask it to read in the data
+    IMU.read(); // ask it to read in the data
     sensors_event_t a, m, g, temp; // Get a new sensor event
-    lsm.getEvent(&a, &m, &g, &temp);
+    IMU.getEvent(&a, &m, &g, &temp);
 
     accelX = a.acceleration.y;
     accelY = a.acceleration.z;
@@ -32,9 +32,9 @@ void updateOrientation() {
     gyro_dt = newGyroUpdate - lastGyroUpdate;
     lastGyroUpdate = newGyroUpdate;
 
-    lsm.read(); // ask it to read in the data
+    IMU.read(); // ask it to read in the data
     sensors_event_t a, m, g, temp; // Get a new sensor event
-    lsm.getEvent(&a, &m, &g, &temp);
+    IMU.getEvent(&a, &m, &g, &temp);
 
     float gyro_dt_seconds = (float)gyro_dt / 1000000;
 
