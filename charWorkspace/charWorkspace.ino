@@ -50,14 +50,11 @@ int zeroed = false;
 
 // Char information machine @TODO: Make docs for state machine ints
 int state = 0; //defines the state machine
-const int buzzVol = 10; //controls the **volume** of the buzzer
 float batV; //voltage of the battery
 
 // LEDs
 int ledState = 0; // ledState used to set the LED
 unsigned long previousMillis = 0;        // will store last time LED was updated
-long OffTime = 900;          // milliseconds of LED off-time
-long OnTime = 100;           // milliseconds of LED on-time
 
 // Flight stuffs
 const int abortRange = 30; //defines how many degrees off target an abort is initiated
