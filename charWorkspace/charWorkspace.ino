@@ -177,9 +177,6 @@ void setup() { // Runs once then goes to loop()
     servoX.write(xMid);
     servoY.write(yMid);
 
-
-
-
     if (!SD.begin(BUILTIN_SDCARD)) {
         Serial.println("sd initialization failed!");
         return;
@@ -193,33 +190,10 @@ void setup() { // Runs once then goes to loop()
 }
 
 void loop() {
-    realTime();
-
-    //  Serial.print(pyrostate:   );
- // Serial.print(kpz);
- // Serial.print(roll);
- // Serial.print(zOut);
-    //Serial.println();
-
-    Serial.println();
-}
-
-void realTime() {
     getTelemetry();
     dTime = millis();
 
     stateDetect();
-
-    /*
-        Serial.print("   pitch:   ");
-        Serial.print(pitch);
-
-        Serial.print("   yaw:   ");
-        Serial.print(yaw);
-
-        Serial.print("   roll:   ");
-        Serial.print(roll);
-    */
 
     // batLowDetect(); //////////////////////disable for flight
 }
