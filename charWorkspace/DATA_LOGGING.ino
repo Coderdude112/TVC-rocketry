@@ -1,9 +1,7 @@
-
+// Handles logging the data
 void logging() {
   flightTime = dTime - launchTime;
-  if (dTime - lastLog >= loggingInterval)
-  {
-    
+  if (dTime - lastLog >= loggingInterval) {
     myFile.println();
     myFile.print(dTime);
     myFile.print(", ");
@@ -37,17 +35,13 @@ void logging() {
     myFile.print(", ");
     myFile.print(pyroState);
     myFile.print(", ");
-    myFile.flush();
+    myFile.flush(); // TODO: Figure out if .flush() is async
     lastLog = dTime;
-
-
   }
-
 }
 
-
-void loggingLabel()
-{
+// Set the headers for the CSV file
+void loggingLabel() {
   myFile.println();
   myFile.print("dTime");
   myFile.print(", ");

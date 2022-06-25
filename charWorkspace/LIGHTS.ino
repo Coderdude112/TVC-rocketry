@@ -1,13 +1,8 @@
-
-void whiteFlash()
-{
-
+void whiteFlash() {
   OffTime = 900;
   OnTime = 100;
-
-
-  // check to see if it's time to change the state of the LED
-  unsigned long currentMillis = millis();
+  
+  unsigned long currentMillis = millis();  // check to see if it's time to change the state of the LED
 
   if ((ledState == HIGH) && (currentMillis - previousMillis >= OnTime))
   {
@@ -26,12 +21,6 @@ void whiteFlash()
 
 
 }
-
-
-
-
-
-
 
 void redFlash()
 {
@@ -61,8 +50,6 @@ void redFlash()
 
 }
 
-
-
 void yellowFlash()
 {
 
@@ -90,8 +77,6 @@ void yellowFlash()
 
 
 }
-
-
 
 void greenFlash()
 {
@@ -121,8 +106,6 @@ void greenFlash()
 
 }
 
-
-
 void cyanFlash()
 {
 
@@ -150,8 +133,6 @@ void cyanFlash()
 
 
 }
-
-
 
 void blueFlash()
 {
@@ -181,8 +162,6 @@ void blueFlash()
 
 }
 
-
-
 void magentaFlash()
 {
 
@@ -210,8 +189,6 @@ void magentaFlash()
 
 
 }
-
-
 
 void cyanGreenFlash()
 {
@@ -241,8 +218,6 @@ void cyanGreenFlash()
 
 }
 
-
-
 void redYellowFlash()
 {
 
@@ -271,15 +246,12 @@ void redYellowFlash()
 
 }
 
-
-
 void off()
 {
   digitalWrite(Rled, HIGH);
   digitalWrite(Gled, HIGH);
   digitalWrite(Bled, HIGH);
 }
-
 
 void white()
 {
@@ -288,14 +260,12 @@ void white()
   digitalWrite(Bled, LOW);
 }
 
-
 void red()
 {
   digitalWrite(Rled, LOW);
   digitalWrite(Gled, HIGH);
   digitalWrite(Bled, HIGH);
 }
-
 
 void yellow()
 {
@@ -304,14 +274,12 @@ void yellow()
   digitalWrite(Bled, HIGH);
 }
 
-
 void green()
 {
   digitalWrite(Rled, HIGH);
   digitalWrite(Gled, LOW);
   digitalWrite(Bled, HIGH);
 }
-
 
 void cyan()
 {
@@ -320,14 +288,12 @@ void cyan()
   digitalWrite(Bled, LOW);
 }
 
-
 void blue()
 {
   digitalWrite(Rled, HIGH);
   digitalWrite(Gled, HIGH);
   digitalWrite(Bled, LOW);
 }
-
 
 void magenta()
 {

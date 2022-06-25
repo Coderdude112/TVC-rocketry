@@ -193,9 +193,7 @@ void setup() { // Runs once then goes to loop()
 }
 
 void loop() {
-
   realTime();
-
 
   //  Serial.print(pyrostate:   );
  // Serial.print(kpz);
@@ -206,15 +204,9 @@ void loop() {
   Serial.println();
 }
 
-
-void realTime()
-{
-
+void realTime() {
   getTelemetry();
   dTime = millis();
-
-
-
 
   stateDetect();
 
@@ -230,5 +222,4 @@ void realTime()
   */
 
   // batLowDetect(); //////////////////////disable for flight
-
 }
