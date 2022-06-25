@@ -105,9 +105,9 @@ uint64_t newGyroUpdate;
 uint64_t gyro_dt;
 Quaternion orientation;
 struct EulerAngles { // Unknown purpose
-  float yaw;
-  float pitch;
-  float roll;
+    float yaw;
+    float pitch;
+    float roll;
 };
 // Current rotation, stored in rad/s according to RHR
 float bX = 0;
@@ -164,62 +164,62 @@ float xOutPR; //PR= post roll
 float yOutPR;
 
 // --------- //
-/* Functions */ 
+/* Functions */
 // --------- //
 void setup() { // Runs once then goes to loop()
-  pinModes();
-  digitalWrite(gpio1, LOW);
-  red();
-  Serial.begin(9600);
-  setupSensor();
-  startBaro();
+    pinModes();
+    digitalWrite(gpio1, LOW);
+    red();
+    Serial.begin(9600);
+    setupSensor();
+    startBaro();
 
-  servoX.write(xMid);
-  servoY.write(yMid);
-
-
+    servoX.write(xMid);
+    servoY.write(yMid);
 
 
-  if (!SD.begin(BUILTIN_SDCARD)) {
-    Serial.println("sd initialization failed!");
-    return;
-    state = 9;
-  }
-  myFile = SD.open("test.csv", FILE_WRITE);
-  loggingLabel();
-  myFile.flush();
-  myFile.close();
-  myFile = SD.open("test.csv", FILE_WRITE);
+
+
+    if (!SD.begin(BUILTIN_SDCARD)) {
+        Serial.println("sd initialization failed!");
+        return;
+        state = 9;
+    }
+    myFile = SD.open("test.csv", FILE_WRITE);
+    loggingLabel();
+    myFile.flush();
+    myFile.close();
+    myFile = SD.open("test.csv", FILE_WRITE);
 }
 
 void loop() {
-  realTime();
+    realTime();
 
-  //  Serial.print(pyrostate:   );
+    //  Serial.print(pyrostate:   );
  // Serial.print(kpz);
  // Serial.print(roll);
  // Serial.print(zOut);
-  //Serial.println();
+    //Serial.println();
 
-  Serial.println();
+    Serial.println();
 }
 
 void realTime() {
-  getTelemetry();
-  dTime = millis();
+    getTelemetry();
+    dTime = millis();
 
-  stateDetect();
+    stateDetect();
 
-  /*
-    Serial.print("   pitch:   ");
-    Serial.print(pitch);
+    /*
+        Serial.print("   pitch:   ");
+        Serial.print(pitch);
 
-    Serial.print("   yaw:   ");
-    Serial.print(yaw);
+        Serial.print("   yaw:   ");
+        Serial.print(yaw);
 
-    Serial.print("   roll:   ");
-    Serial.print(roll);
-  */
+        Serial.print("   roll:   ");
+        Serial.print(roll);
+    */
 
-  // batLowDetect(); //////////////////////disable for flight
+    // batLowDetect(); //////////////////////disable for flight
 }
