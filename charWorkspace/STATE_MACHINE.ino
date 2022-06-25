@@ -1,7 +1,7 @@
 void startUp() {
     while (!(calCount >= 250)) { // Some sort of calibration
         state = 1;
-        redFlash();
+        flashLED("red");
 
         lsm.read();  // ask it to read in the data
         sensors_event_t a, m, g, temp; // Get a new sensor event
@@ -27,7 +27,7 @@ void startUp() {
 
 void padIdle() {
     launchDetect();
-    greenFlash();
+    flashLED("green");
     logging();
 }
 
@@ -42,7 +42,7 @@ void poweredFlight() {
         state = 3;
     }
 
-    yellowFlash();
+    flashLED("yellow");
 
 
     /* EulerAngles angles = quatToEuler(orientation);
@@ -57,14 +57,14 @@ void poweredFlight() {
 }
 
 void unpoweredAscent() {
-    cyanFlash();
+    flashLED("cyan");
     apogeeDetect();
     apogeeTimer();
     logging();
 }
 
 void ballisticDescent() {
-    whiteFlash();
+    flashLED("white");
 }
 
 void chuteDescent() {
@@ -88,7 +88,7 @@ void chuteDescent() {
     servoY.write(yMid);
     zOut = 0;
 
-    blueFlash();
+    flashLED("blue");
     if (flightTime >= 30000) { // Stay in state 5 until 30 sec have passed from launch
         state = 6;
     }
@@ -99,21 +99,24 @@ void chuteDescent() {
 void landed() {
     pyroState = false;
     digitalWrite(gpio1, LOW);
-    magentaFlash();
+    flashLED("magenta");
     myFile.flush();
     myFile.close();
 }
 
 void safed() {
-    cyanGreenFlash();
+    flashLED("cyan");
+    flashLED("green");
 }
 
 void batLow() {
-    redYellowFlash();
+    flashLED("red");
+    flashLED("yellow");
 }
 
 void sdFail() {
-    redYellowFlash();
+    flashLED("red");
+    flashLED("yellow");
 }
 
 

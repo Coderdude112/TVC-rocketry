@@ -169,7 +169,7 @@ float yOutPR;
 void setup() { // Runs once then goes to loop()
     pinModes();
     digitalWrite(gpio1, LOW);
-    red();
+    setLED("red");
     Serial.begin(9600);
     setupSensor();
     startBaro();
